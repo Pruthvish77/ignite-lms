@@ -45,145 +45,14 @@ export default function CourseDetail({ courseId }: { courseId: string }) {
   const [loading, setLoading] = useState(true)
   const [showPayment, setShowPayment] = useState(false)
 
-  // Real course data with video URLs
-  const realCourses: Record<string, Course> = {
-    '1': {
-      id: '1',
-      title: 'Complete Web Development Bootcamp',
-      description: 'Learn HTML, CSS, JavaScript, React, Node.js and more in this comprehensive course.',
-      instructor: 'Dr. Sarah Johnson',
-      price: 89.99,
-      duration: '42 hours',
-      level: 'Beginner',
-      rating: 4.8,
-      students: 15420,
-      image: '/courses/web-dev.jpg',
-      category: 'Web Development',
-      enrolled: false,
-      purchased: false,
-      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      lessons: [
-        {
-          id: '1-1',
-          title: 'Introduction to Web Development',
-          duration: '15 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          order: 1,
-          isPreview: true
-        },
-        {
-          id: '1-2',
-          title: 'HTML Fundamentals',
-          duration: '45 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-          order: 2
-        },
-        {
-          id: '1-3',
-          title: 'CSS Styling Basics',
-          duration: '60 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-          order: 3
-        },
-        {
-          id: '1-4',
-          title: 'JavaScript Essentials',
-          duration: '90 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-          order: 4
-        }
-      ]
-    },
-    '2': {
-      id: '2',
-      title: 'Data Science & Machine Learning',
-      description: 'Master Python, TensorFlow, and advanced ML algorithms.',
-      instructor: 'Prof. Michael Chen',
-      price: 129.99,
-      duration: '56 hours',
-      level: 'Intermediate',
-      rating: 4.9,
-      students: 12350,
-      image: '/courses/data-science.jpg',
-      category: 'Data Science',
-      enrolled: false,
-      purchased: false,
-      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      lessons: [
-        {
-          id: '2-1',
-          title: 'Python for Data Science',
-          duration: '30 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-          order: 1,
-          isPreview: true
-        },
-        {
-          id: '2-2',
-          title: 'NumPy and Pandas',
-          duration: '45 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-          order: 2
-        },
-        {
-          id: '2-3',
-          title: 'Machine Learning Basics',
-          duration: '60 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          order: 3
-        }
-      ]
-    },
-    '3': {
-      id: '3',
-      title: 'UI/UX Design Masterclass',
-      description: 'Create beautiful user interfaces and amazing user experiences.',
-      instructor: 'Emily Rodriguez',
-      price: 79.99,
-      duration: '28 hours',
-      level: 'Beginner',
-      rating: 4.7,
-      students: 8920,
-      image: '/courses/ui-ux.jpg',
-      category: 'Design',
-      enrolled: false,
-      purchased: false,
-      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      lessons: [
-        {
-          id: '3-1',
-          title: 'Design Principles',
-          duration: '20 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-          order: 1,
-          isPreview: true
-        },
-        {
-          id: '3-2',
-          title: 'User Research Methods',
-          duration: '35 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-          order: 2
-        },
-        {
-          id: '3-3',
-          title: 'Prototyping with Figma',
-          duration: '50 min',
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-          order: 3
-        }
-      ]
-    }
-  }
-
   useEffect(() => {
-    const courseData = realCourses[courseId] || getCourse(courseId)
+    const courseData = getCourse(courseId)
     setCourse(courseData || null)
     if (courseData) {
       setCurrentLesson(courseData.lessons[0])
     }
     setLoading(false)
-  }, [courseId])
+  }, [courseId, getCourse])
 
   const handleEnroll = async () => {
     if (!user) {
@@ -198,9 +67,7 @@ export default function CourseDetail({ courseId }: { courseId: string }) {
 
     try {
       await enrollCourse(courseId)
-      if (course) {
-        setCourse({ ...course, enrolled: true })
-      }
+      // The context will update the course state automatically
     } catch (error) {
       console.error('Enrollment failed:', error)
     }
@@ -209,10 +76,12 @@ export default function CourseDetail({ courseId }: { courseId: string }) {
   const handlePayment = () => {
     // Simulate payment processing
     alert('Payment successful! You now have access to this course.')
-    if (course) {
-      setCourse({ ...course, purchased: true, enrolled: true })
-    }
-    setShowPayment(false)
+    // Enroll the course after payment
+    enrollCourse(courseId).then(() => {
+      setShowPayment(false)
+    }).catch(error => {
+      console.error('Enrollment after payment failed:', error)
+    })
   }
 
   const handleLessonComplete = (lessonId: string) => {

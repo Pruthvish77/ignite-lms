@@ -17,6 +17,8 @@ interface Course {
   lessons: Lesson[]
   enrolled: boolean
   progress?: number
+  videoUrl?: string
+  purchased?: boolean
 }
 
 interface Lesson {
@@ -27,6 +29,7 @@ interface Lesson {
   content?: string
   order: number
   completed?: boolean
+  isPreview?: boolean
 }
 
 interface CourseContextType {
@@ -58,7 +61,7 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Mock data for demo
+    // Mock data for demo with real videos
     const mockCourses: Course[] = [
       {
         id: '1',
@@ -73,10 +76,31 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
         image: '/courses/web-dev.jpg',
         category: 'Web Development',
         enrolled: false,
+        purchased: false,
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         lessons: [
-          { id: '1-1', title: 'Introduction to Web Development', duration: '15 min', order: 1 },
-          { id: '1-2', title: 'HTML Fundamentals', duration: '45 min', order: 2 },
-          { id: '1-3', title: 'CSS Styling Basics', duration: '60 min', order: 3 }
+          { 
+            id: '1-1', 
+            title: 'Introduction to Web Development', 
+            duration: '15 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            order: 1,
+            isPreview: true
+          },
+          { 
+            id: '1-2', 
+            title: 'HTML Fundamentals', 
+            duration: '45 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            order: 2
+          },
+          { 
+            id: '1-3', 
+            title: 'CSS Styling Basics', 
+            duration: '60 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            order: 3
+          }
         ]
       },
       {
@@ -92,10 +116,31 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
         image: '/courses/data-science.jpg',
         category: 'Data Science',
         enrolled: false,
+        purchased: false,
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
         lessons: [
-          { id: '2-1', title: 'Python for Data Science', duration: '30 min', order: 1 },
-          { id: '2-2', title: 'NumPy and Pandas', duration: '45 min', order: 2 },
-          { id: '2-3', title: 'Machine Learning Basics', duration: '60 min', order: 3 }
+          { 
+            id: '2-1', 
+            title: 'Python for Data Science', 
+            duration: '30 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+            order: 1,
+            isPreview: true
+          },
+          { 
+            id: '2-2', 
+            title: 'NumPy and Pandas', 
+            duration: '45 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            order: 2
+          },
+          { 
+            id: '2-3', 
+            title: 'Machine Learning Basics', 
+            duration: '60 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            order: 3
+          }
         ]
       },
       {
@@ -111,10 +156,31 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
         image: '/courses/ui-ux.jpg',
         category: 'Design',
         enrolled: false,
+        purchased: false,
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
         lessons: [
-          { id: '3-1', title: 'Design Principles', duration: '20 min', order: 1 },
-          { id: '3-2', title: 'User Research Methods', duration: '35 min', order: 2 },
-          { id: '3-3', title: 'Prototyping with Figma', duration: '50 min', order: 3 }
+          { 
+            id: '3-1', 
+            title: 'Design Principles', 
+            duration: '20 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+            order: 1,
+            isPreview: true
+          },
+          { 
+            id: '3-2', 
+            title: 'User Research Methods', 
+            duration: '35 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+            order: 2
+          },
+          { 
+            id: '3-3', 
+            title: 'Prototyping with Figma', 
+            duration: '50 min', 
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+            order: 3
+          }
         ]
       }
     ]
@@ -130,7 +196,7 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
       // Mock enrollment - in real app, this would be an API call
       setCourses(prev => prev.map(course => 
         course.id === courseId 
-          ? { ...course, enrolled: true, progress: 0 }
+          ? { ...course, enrolled: true, purchased: true, progress: 0 }
           : course
       ))
     } catch (error) {
