@@ -186,6 +186,13 @@ export default function Courses() {
                 >
                   {course.enrolled ? 'Enrolled' : 'Enroll Now'}
                 </button>
+                
+                <Link
+                  href={`/courses/${course.id}`}
+                  className="w-full py-2 px-4 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-center"
+                >
+                  View Course
+                </Link>
               </div>
             </motion.div>
           ))}
